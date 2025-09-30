@@ -1,48 +1,41 @@
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Scenario } from "@/data/agents";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
+import { api } from "@/services/api";
 
 interface PerformanceViewProps {
   scenario: Scenario;
   onClose: () => void;
 }
 
-const resolutionData = [
-  { date: "July 3", value: 50 },
-  { date: "July 6", value: 58 },
-  { date: "July 9", value: 65 },
-  { date: "July 12", value: 78 },
-  { date: "July 15", value: 82 },
-  { date: "July 18", value: 76 },
-  { date: "July 21", value: 68 },
-  { date: "July 24", value: 55 },
-];
-
-const roiData = [
-  { date: "July 3", value: 50 },
-  { date: "July 6", value: 62 },
-  { date: "July 9", value: 70 },
-  { date: "July 12", value: 80 },
-  { date: "July 15", value: 85 },
-  { date: "July 18", value: 82 },
-  { date: "July 21", value: 68 },
-  { date: "July 24", value: 55 },
-];
-
-const enhancedResolutionData = resolutionData.map((d, i) => ({
-  ...d,
-  enhanced: Math.min(100, d.value + 15 + i * 2)
-}));
-
-const enhancedRoiData = roiData.map((d, i) => ({
-  ...d,
-  enhanced: Math.min(100, d.value + 10 + i * 1.5)
-}));
-
 export const PerformanceView = ({ scenario, onClose }: PerformanceViewProps) => {
   const [isActivated, setIsActivated] = useState(false);
+  const [resolutionData, setResolutionData] = useState<any[]>([]);
+  const [metrics, setMetrics] = useState({
+    first_call_resolution: 0,
+    automation_rate: 0,
+    csat_improvement: 0
+  });
+  const [costSavings, setCostSavings] = useState({
+    cost_saved_by_agents: 0,
+    immediate_efficiency_gain: 0
+  });
+
+  useEffect(() => {
+    api.getResolutionTime().then(data => {
+      setResolutionData(data.human_time.map((item: any, i: number) => ({
+        ...item,
+        enhanced: data.ai_time[i].value
+      })));
+    });
+  }, []);
+
+  useEffect(() => {
+    api.getMetrics(isActivated).then(setMetrics);
+    api.getAnnualCostSavings(isActivated, scenario.agents).then(setCostSavings);
+  }, [isActivated, scenario.agents]);
 
   return (
     <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 overflow-y-auto">
@@ -116,7 +109,7 @@ export const PerformanceView = ({ scenario, onClose }: PerformanceViewProps) => 
                   <p className="text-xs text-muted-foreground">Trend Analysis</p>
                 </div>
                 <ResponsiveContainer width="100%" height={200}>
-                  <LineChart data={isActivated ? enhancedResolutionData : resolutionData}>
+                  <LineChart data={resolutionData}>
                     <XAxis 
                       dataKey="date" 
                       stroke="hsl(var(--muted-foreground))"
@@ -164,7 +157,7 @@ export const PerformanceView = ({ scenario, onClose }: PerformanceViewProps) => 
                   <p className="text-xs text-muted-foreground">Trend Analysis</p>
                 </div>
                 <ResponsiveContainer width="100%" height={200}>
-                  <LineChart data={isActivated ? enhancedRoiData : roiData}>
+                  <LineChart data={resolutionData}>
                     <XAxis 
                       dataKey="date" 
                       stroke="hsl(var(--muted-foreground))"
@@ -214,7 +207,7 @@ export const PerformanceView = ({ scenario, onClose }: PerformanceViewProps) => 
                     FIRST CONTACT RESOLUTION
                   </h4>
                   <div className="text-5xl font-bold">
-                    {isActivated ? scenario.metrics.fcr + 20 : scenario.metrics.fcr}%
+                    {metrics.first_call_resolution}%
                   </div>
                 </div>
 
@@ -224,7 +217,7 @@ export const PerformanceView = ({ scenario, onClose }: PerformanceViewProps) => 
                     AUTOMATION RATE
                   </h4>
                   <div className="text-5xl font-bold">
-                    {isActivated ? scenario.successRate : scenario.metrics.automationRate}%
+                    {metrics.automation_rate}%
                   </div>
                 </div>
 
@@ -234,7 +227,7 @@ export const PerformanceView = ({ scenario, onClose }: PerformanceViewProps) => 
                     CSAT SCORE
                   </h4>
                   <div className="text-5xl font-bold">
-                    {isActivated ? scenario.metrics.csatScore + 12 : scenario.metrics.csatScore}%
+                    {metrics.csat_improvement}%
                   </div>
                 </div>
 
@@ -247,21 +240,13 @@ export const PerformanceView = ({ scenario, onClose }: PerformanceViewProps) => 
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Projected Annual Cost savings</span>
                       <span className={isActivated ? "text-accent font-semibold" : ""}>
-                        ${isActivated 
-                          ? (scenario.metrics.costSavings * 1.5).toLocaleString() 
-                          : 0}
+                        ${costSavings.cost_saved_by_agents.toLocaleString()}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Immediate efficiency gain</span>
                       <span className={isActivated ? "text-accent font-semibold" : ""}>
-                        {isActivated ? scenario.metrics.efficiencyGain + 15 : 0}%
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">ROI multiplier</span>
-                      <span className={isActivated ? "text-accent font-semibold" : ""}>
-                        {isActivated ? (scenario.metrics.roiMultiplier + 0.5).toFixed(1) : scenario.metrics.roiMultiplier}x
+                        {costSavings.immediate_efficiency_gain}%
                       </span>
                     </div>
                   </div>

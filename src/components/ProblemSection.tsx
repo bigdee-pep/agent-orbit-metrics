@@ -1,6 +1,17 @@
 import { TrendingUp, Clock, TrendingDown } from "lucide-react";
+import { useEffect, useState } from "react";
+import { api } from "@/services/api";
 
 export const ProblemSection = () => {
+  const [stats, setStats] = useState({
+    repetitive_time: 0,
+    escalated_percentage: 0,
+    reduced_csat: 0
+  });
+
+  useEffect(() => {
+    api.getFirstScreen().then(setStats);
+  }, []);
   return (
     <section className="py-24 px-6">
       <div className="max-w-6xl mx-auto">
@@ -13,7 +24,7 @@ export const ProblemSection = () => {
           {/* Stat Card 1 */}
           <div className="glass-card rounded-3xl p-8 space-y-4">
             <TrendingUp className="w-10 h-10 text-muted-foreground" />
-            <div className="text-5xl font-bold">45%</div>
+            <div className="text-5xl font-bold">{stats.repetitive_time}%</div>
             <p className="text-sm text-muted-foreground">
               of your agent's time is spent on repetitive, automatable tasks.
             </p>
@@ -22,7 +33,7 @@ export const ProblemSection = () => {
           {/* Stat Card 2 */}
           <div className="glass-card rounded-3xl p-8 space-y-4">
             <Clock className="w-10 h-10 text-muted-foreground" />
-            <div className="text-5xl font-bold">12 minutes</div>
+            <div className="text-5xl font-bold">{stats.escalated_percentage}%</div>
             <p className="text-sm text-muted-foreground">
               are added because of Escalations and Hand-offs on a daily basis
             </p>
@@ -31,7 +42,7 @@ export const ProblemSection = () => {
           {/* Stat Card 3 */}
           <div className="glass-card rounded-3xl p-8 space-y-4">
             <TrendingDown className="w-10 h-10 text-muted-foreground" />
-            <div className="text-5xl font-bold">8 points</div>
+            <div className="text-5xl font-bold">{stats.reduced_csat} points</div>
             <p className="text-sm text-muted-foreground">
               are deducted from your CSAT daily because of inconsistent answers
             </p>
