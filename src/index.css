@@ -76,25 +76,22 @@ All colors MUST be HSL.
   .orbital-glow {
     position: relative;
     background: radial-gradient(ellipse at center, 
-      hsl(var(--glow-green) / 0.4) 0%,
-      hsl(var(--glow-purple) / 0.3) 25%,
-      hsl(var(--glow-pink) / 0.3) 50%,
-      hsl(var(--glow-orange) / 0.3) 75%,
+      hsl(var(--glow-green) / 0.5) 0%,
+      hsl(var(--glow-purple) / 0.4) 25%,
+      hsl(var(--glow-pink) / 0.4) 50%,
+      hsl(var(--glow-orange) / 0.4) 75%,
       transparent 100%
     );
-    filter: blur(80px);
+    filter: blur(100px);
     animation: pulse-glow 8s ease-in-out infinite;
   }
   
-  @keyframes pulse-glow {
-    0%, 100% {
-      opacity: 0.6;
-      transform: scale(1);
-    }
-    50% {
-      opacity: 0.9;
-      transform: scale(1.1);
-    }
+  .hover-scale {
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .hover-scale:hover {
+    transform: scale(1.05);
   }
   
   .gradient-text {
