@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { ChevronLeft } from "lucide-react";
 import { HeroSection } from "@/components/HeroSection";
 import { ProblemSection } from "@/components/ProblemSection";
 import { AgentDifferenceSection } from "@/components/AgentDifferenceSection";
@@ -29,8 +30,26 @@ const Index = () => {
     }
   };
 
+  const handleBack = () => {
+    if (currentSection > 0) {
+      setCurrentSection((prev) => prev - 1);
+      setSelectedScenarioId(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background overflow-hidden">
+      {/* Back Button */}
+      {currentSection > 0 && (
+        <button
+          onClick={handleBack}
+          className="fixed top-8 left-8 z-50 glass-card p-2 rounded-full hover:scale-110 transition-all duration-300"
+          aria-label="Go back"
+        >
+          <ChevronLeft className="w-5 h-5 text-foreground" />
+        </button>
+      )}
+
       {/* Logo */}
       <div className="fixed top-8 left-1/2 -translate-x-1/2 z-50">
         <h1 className="text-2xl font-bold text-foreground">Orbit</h1>
