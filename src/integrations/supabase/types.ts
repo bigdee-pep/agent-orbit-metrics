@@ -14,7 +14,120 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      agents: {
+        Row: {
+          created_at: string
+          estimated_tokens_ingested: number
+          human_rate_usd_per_hour: number
+          id: string
+          model_rate_per_1k_tokens_usd: number
+          model_used: string
+          name: string
+          rating: number
+          reliability: number
+        }
+        Insert: {
+          created_at?: string
+          estimated_tokens_ingested: number
+          human_rate_usd_per_hour: number
+          id?: string
+          model_rate_per_1k_tokens_usd: number
+          model_used: string
+          name: string
+          rating: number
+          reliability: number
+        }
+        Update: {
+          created_at?: string
+          estimated_tokens_ingested?: number
+          human_rate_usd_per_hour?: number
+          id?: string
+          model_rate_per_1k_tokens_usd?: number
+          model_used?: string
+          name?: string
+          rating?: number
+          reliability?: number
+        }
+        Relationships: []
+      }
+      metrics: {
+        Row: {
+          base_value: number
+          created_at: string
+          enhanced_value: number
+          id: string
+          metric_type: string
+        }
+        Insert: {
+          base_value: number
+          created_at?: string
+          enhanced_value: number
+          id?: string
+          metric_type: string
+        }
+        Update: {
+          base_value?: number
+          created_at?: string
+          enhanced_value?: number
+          id?: string
+          metric_type?: string
+        }
+        Relationships: []
+      }
+      scenarios: {
+        Row: {
+          agents: string[]
+          category_desc: string
+          category_name: string
+          created_at: string
+          id: string
+          success_rate: number
+        }
+        Insert: {
+          agents: string[]
+          category_desc: string
+          category_name: string
+          created_at?: string
+          id?: string
+          success_rate: number
+        }
+        Update: {
+          agents?: string[]
+          category_desc?: string
+          category_name?: string
+          created_at?: string
+          id?: string
+          success_rate?: number
+        }
+        Relationships: []
+      }
+      time_series_data: {
+        Row: {
+          ai_value: number
+          created_at: string
+          data_type: string
+          date_label: string
+          human_value: number
+          id: string
+        }
+        Insert: {
+          ai_value: number
+          created_at?: string
+          data_type: string
+          date_label: string
+          human_value: number
+          id?: string
+        }
+        Update: {
+          ai_value?: number
+          created_at?: string
+          data_type?: string
+          date_label?: string
+          human_value?: number
+          id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

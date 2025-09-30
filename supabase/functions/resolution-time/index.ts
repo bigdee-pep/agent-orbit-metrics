@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -11,32 +12,30 @@ serve(async (req) => {
   }
 
   try {
-    const humanTime = [
-      { date: "July 3", value: 50 },
-      { date: "July 6", value: 58 },
-      { date: "July 9", value: 65 },
-      { date: "July 12", value: 78 },
-      { date: "July 15", value: 82 },
-      { date: "July 18", value: 76 },
-      { date: "July 21", value: 68 },
-      { date: "July 24", value: 55 },
-    ];
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+    );
 
-    const aiTime = humanTime.map((d, i) => ({
-      ...d,
-      value: Math.min(100, d.value + 15 + i * 2)
-    }));
+    const { data, error } = await supabaseClient
+      .from('time_series_data')
+      .select('*')
+      .eq('data_type', 'resolution')
+      .order('date_label', { ascending: true });
 
-    const data = {
-      human_time: humanTime,
-      ai_time: aiTime
+    if (error) throw error;
+
+    const response = {
+      human_time: data.map(d => ({ date: d.date_label, value: d.human_value })),
+      ai_time: data.map(d => ({ date: d.date_label, value: d.ai_value }))
     };
 
     return new Response(
-      JSON.stringify(data),
+      JSON.stringify(response),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
+    console.error('Error in resolution-time function:', error);
     return new Response(
       JSON.stringify({ error: (error as Error).message }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
