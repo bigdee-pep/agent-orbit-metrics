@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import Orb from "@/components/ui/Orb";
 
 interface HeroSectionProps {
   onSeeAction: () => void;
@@ -7,8 +8,10 @@ interface HeroSectionProps {
 export const HeroSection = ({ onSeeAction }: HeroSectionProps) => {
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
-      {/* Orbital Glow Effect */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] orbital-glow pointer-events-none" />
+      {/* Orb Background Effect */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] pointer-events-none opacity-60">
+        <Orb hue={260} hoverIntensity={0.3} rotateOnHover={true} />
+      </div>
       
       {/* Content */}
       <div className="relative z-10 max-w-6xl mx-auto text-center space-y-12 animate-fade-in">
