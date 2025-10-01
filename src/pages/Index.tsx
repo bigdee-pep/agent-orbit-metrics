@@ -10,24 +10,33 @@ import { scenarios } from "@/data/agents";
 const Index = () => {
   const [currentSection, setCurrentSection] = useState(0);
   const [selectedScenarioId, setSelectedScenarioId] = useState<string | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   
   const selectedScenario = scenarios.find(s => s.id === selectedScenarioId);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Enter" && currentSection < 3 && !selectedScenarioId) {
+      if (e.key === "Enter" && currentSection < 3 && !selectedScenarioId && uploadedFile) {
         setCurrentSection((prev) => prev + 1);
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentSection, selectedScenarioId]);
+  }, [currentSection, selectedScenarioId, uploadedFile]);
 
   const handleNext = () => {
+    if (!uploadedFile) {
+      return;
+    }
     if (currentSection < 3) {
       setCurrentSection((prev) => prev + 1);
     }
+  };
+
+  const handleFileUpload = (file: File) => {
+    setUploadedFile(file);
+    setCurrentSection(1);
   };
 
   const handleBack = () => {
@@ -63,7 +72,7 @@ const Index = () => {
             : "opacity-0 -translate-y-full pointer-events-none fixed inset-0"
         }`}
       >
-        <HeroSection onSeeAction={() => setCurrentSection(1)} />
+        <HeroSection onSeeAction={handleFileUpload} />
       </div>
 
       {/* Section 1: Problem Section */}
